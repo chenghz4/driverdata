@@ -1,0 +1,28 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<h2>Database roles</h2>
+
+<pre><code>postgres: SArzbxybEyLB
+dds (superuser):y8M36LkeVgGn
+</code></pre>
+
+<h2>Databases</h2>
+
+<pre><code>                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ dds       | dds      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+</code></pre>
+
+<h2>WAL config</h2>
+
+<pre><code>archive_mode = on
+archive_command = 'test ! -f /mnt/backup/pg_wal/%f &amp;&amp; cp %p /mnt/backup/pg_wal/%f'
+archive_timeout = 0
+wal_level = archive
+</code></pre>

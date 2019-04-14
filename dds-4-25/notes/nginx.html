@@ -1,0 +1,45 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<p>The old static website has been mirrored to /srv/www/datadrivenshipping.com/</p>
+
+<h2>nginx sites-enabled</h2>
+
+<pre><code>https-dev.datadrivenshipping.com -&gt; ../sites-available/https-dev.datadrivenshipping.com
+http-www.datadrivenshipping.com -&gt; ../sites-available/http-www.datadrivenshipping.com
+</code></pre>
+
+<h2>https (backend)</h2>
+
+<pre><code>(pending transition to final www subdomain)
+</code></pre>
+
+<h2>http (static site)</h2>
+
+<pre><code>server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    root /srv/www/datadrivenshipping.com;
+    index index.html index.htm;
+    default_type text/html;
+    server_name www.datadrivenshipping.com;
+
+    location / {
+        try_files $uri $uri/ $uri.html /index.html;
+    }
+}
+</code></pre>
+
+<h2>SSL</h2>
+
+<p>SSL files live in /etc/nginx/ssl/</p>
+
+<p>Private key: server.key</p>
+
+<p>CA certificate: DigiCertCA.crt</p>
+
+<p>Bundled signed certificates: bundle.crt</p>
+
+<p>CSR: server.csr</p>
+
+<p>Private key readable only by root, but no passphrase</p>

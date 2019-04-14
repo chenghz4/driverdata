@@ -1,0 +1,110 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<h2>Account info</h2>
+
+<p>AWS Account ID: <code>7254-8562-1300</code></p>
+
+<p>Canonical User ID: <code>941328e0783d599dc517790889f0163537b035d770b08038eb1250642b5df1b9</code></p>
+
+<h2>IAM</h2>
+
+<p>IAM sign-in: https://725485621300.signin.aws.amazon.com/console</p>
+
+<p>andrew: <code>AKIAITKKIBHGZSZAP6JA CEfXnfyJi0s9SbpS76ex4pgURwX1Yb8qKKNz1t3t</code></p>
+
+<p>password: <code>Wk)W4Q%pjGDd</code></p>
+
+<p>andrew granted PowerUser access:</p>
+
+<pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": "iam:*",
+      "Resource": "*"
+    }
+  ]
+}
+</code></pre>
+
+<p>dds: <code>AKIAIYBLUL5XVYA7FVSQ Lo7ibHUwUqMvuhybKL/PVxf+/FDMJdichM7PW2LL</code></p>
+
+<p>dds granted full access to the S3 dds-exports bucket:</p>
+
+<pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1394853316000",
+      "Effect": "Allow",
+      "Action": [
+        "s3:*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::dds-exports/*"
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<p>dds granted full access to SES:</p>
+
+<pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1394853444000",
+      "Effect": "Allow",
+      "Action": [
+        "ses:*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<h2>SES</h2>
+
+<p>Added datadrivenshipping.com as a domain</p>
+
+<p>Verification records: </p>
+
+<pre><code>_amazonses.datadrivenshipping.com. TXT "Q8VUijZQzwAwMJkB+lf2AaGHG1sa/RErewVWBnjXI6I=" - - 1800
+46nokl7n6ufpgnrpo5qxptumiegdxb3b._domainkey.datadrivenshipping.com. CNAME 46nokl7n6ufpgnrpo5qxptumiegdxb3b.dkim.amazonses.com - - 1800 
+bsconsix5i64rdbfqaqbtdntaootryoj._domainkey.datadrivenshipping.com. CNAME bsconsix5i64rdbfqaqbtdntaootryoj.dkim.amazonses.com - - 1800
+rofjbbg43cx5jojbho64pobda4u237vg._domainkey.datadrivenshipping.com. CNAME rofjbbg43cx5jojbho64pobda4u237vg.dkim.amazonses.com - - 1800
+</code></pre>
+
+<p>Requested production access:</p>
+
+<pre><code>Use Case Description: To send signup and password reset emails to users
+</code></pre>
+
+<p>We are required to regularly check https://console.aws.amazon.com/ses/home?region=us-west-2 for bounces/complaints</p>
+
+<p>Production access was approved within 1-2 hours</p>
+
+<h2>S3</h2>
+
+<p>Added bucket "dds-exports" to Northern California region. </p>
+
+<p>No logging, no notifications, no automatic deletion, no versioning.</p>
+
+<h2>Route 53</h2>
+
+<p>Created datadrivenshipping.com hosted zone</p>
+
+<p>Nameservers:</p>
+
+<pre><code>ns-483.awsdns-60.com.
+ns-789.awsdns-34.net.
+ns-1179.awsdns-19.org.
+ns-1537.awsdns-00.co.uk.
+</code></pre>
+
+<p>Copied all records over to Route 53 to prevent disruption of other services</p>

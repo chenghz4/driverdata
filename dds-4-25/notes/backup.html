@@ -1,0 +1,39 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<h2>Backup drive</h2>
+
+<p>750 GB SATA:</p>
+
+<pre><code>Disk /dev/sdc: 750.2 GB, 750156374016 bytes
+255 heads, 63 sectors/track, 91201 cylinders, total 1465149168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdc1              63  1465149167   732574552+  83  Linux
+</code></pre>
+
+<p>No hot-swap support intended presently</p>
+
+<h2>MongoDB backup</h2>
+
+<p>Advise running manually after each new census database since very few fields will be altered</p>
+
+<pre><code>mongodump -o /mnt/backup -d censusXXXXi
+</code></pre>
+
+<h2>Incremental filesystem backup</h2>
+
+<p>Runs daily</p>
+
+<pre><code>rdiff-backup /srv/ /mnt/backup/srv
+rdiff-backup /etc/ /mnt/backup/etc
+</code></pre>
+
+<p>Logs to syslog for review</p>
+
+<h2>Postgres WAL archiving</h2>
+
+<p>See postgres-notes</p>

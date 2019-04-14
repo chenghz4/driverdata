@@ -1,0 +1,293 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load payments_tags %}
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block body_class %}{% endblock %}
+
+{% block banner %}
+    <h1>Data Driven Shipping</h1>
+    {% block extra_style %}
+        <style>
+            input {
+                font-family: monospace;
+            }
+        </style>
+    {% endblock %}
+
+
+{% endblock %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <p class="what_next">You've logged in. Please capture the CSRF token from the logout form and throw some requests at
+            <a href="/api/?format=json">our REST API.</a></p>
+        <p>For Stripe integration purposes, this user's email is {{ request.user.email }}</p>
+        <hr/>
+        <h3>A brief walkthrough</h3>
+        What follows is a brief tour of the backend functionality and the sorts of requests it is expecting. This is hardly a frontend but it at least makes
+        requests in response to button presses. Code samples are provided with each button.
+        <h4>Your CSRF token</h4>
+        <p>Pass this in an X-CSRFToken header with all state-changing requests.</p><br/>
+        <input style="width:300px" id="showcsrf"/>
+        <h4>Register for a subscription</h4>
+        <p>If you've just signed up, you don't have a subscription through Stripe. Get a token below that we'll charge $25/month with.
+            Just enter the card number 4242424242424242, any CVC, and an expiration date in the future. We're using a test key so no charges
+            will actually go through. This request might take a few seconds because it incurs two round trips, plus Stripe's processing time.</p>
+        <p>This form is the basic reference implementation suggested by Stripe, but it can certainly be improved with some styling.</p>
+        <form method="POST" id="payment-form">
+            {% csrf_token %}
+            <span class="payment-errors"></span>
+
+            <div class="form-row">
+                <label>
+                    <span>Card Number</span>
+                    <input type="text" size="20" data-stripe="number" value="4242424242424242"/>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>CVC</span>
+                    <input type="text" size="4" data-stripe="cvc" value="123"/>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>Expiration (MM/YYYY)</span>
+                    <input type="text" size="2" data-stripe="exp-month" value="05"/>
+                </label>
+                <span> / </span>
+                <input type="text" size="4" data-stripe="exp-year" value="15"/>
+            </div>
+
+            <button type="submit">Get Token</button>
+        </form>
+        <br/>
+        <p>Now, POST a new subscription to the backend along with the token:</p>
+        <pre contenteditable>
+{% include "example1.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+        <br/>
+        <h4>Try out the API</h4>
+        <p>If the above request returned success, you've been granted access to the API. First, get a full view of everything attached to your account:</p>
+        <pre contenteditable>
+{% include "example2.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+        <br/>
+        <h4>Census fields</h4>
+        <p>You may list all census fields registered with the backend, and retrieve descriptions for each</p>
+        <pre contenteditable>
+{% include "example3.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+        <br/>
+        <h4>Standard REST API support</h4>
+        <p>In order to delete an object which you own, simply DELETE that resource.
+            For example, in order to unsubscribe, DELETE your subscription and wait a few moments. This request will take several seconds because two round
+            trips and a webhook are involved. Then try accessing other non-payment API features - they should be disabled. In order to continue, you can quickly
+            resubscribe at the top of the page. Be sure to get a new token first. </p>
+        <p>The backend listens to Stripe webhooks, so if a user ends their subscription directly through Stripe, the backend will be notified and disable their
+            access</p>
+        <pre contenteditable>
+{% include "example4.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <h4>API documentation</h4>
+        <p>To see which resources are available, GET the API root. Access the schema of individual resources by GETing /api/resource/schema.
+        <pre contenteditable>
+{% include "example5.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <h4>Data Driven Shipping queries</h4>
+        <p>The first step is to create a new blank query. Let's create a new query that will include companies in Las Vegas, sorted by name. Review the census
+            field list to get the URI for a named field. I recommend caching that list when a user opens the application.</p>
+        <pre contenteditable>
+{% include "example6.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <p>Now, if you GET /api/query/, you will see all of the queries that belong to you. </p>
+        <pre contenteditable>
+{% include "example7.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <p>The query you just created has no query filters, so no sample is generated. Create a query filter to match only records where PHY_CITY (city of
+            physical location) is equal to "Las Vegas". This may take a second or two because the backend is querying the database to retrieve 10 sample records
+            matching all filters. Once the request completes, re-run the previous query to refresh the query list.</p>
+        <p>You should see the total number of records matched and the 10-record sample</p>
+        <pre contenteditable>
+{% include "example8.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <p>Now that we've imposed filters on the data, we can export matching records to a file in any of several formats. Exports are limited to 10,000
+            records to prevent abuse but this limit is configurable. Choose a format below and execute the request. The request should return quickly, but a
+            Celery process will perform the export asynchronously in the background.</p>
+        <select id="format">
+            <option value="xls">.xls (Old Excel)</option>
+            <option value="xlsx">.xlsx (Excel 2007+)</option>
+            <option value="csv">.csv (comma-separated value)</option>
+            <option value="tsv">.tsv (tab-separated value)</option>
+            <option value="json">JSON</option>
+            <option value="yaml">YAML: "Yet Another Markup Language"</option>
+            <option value="ods">.ods (Open Document Spreadsheet)</option>
+            <option value="html">.html (HTML table)</option>
+        </select>
+        <pre contenteditable>
+{% include "example9.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+
+        <br/>
+        <p>Query /api/exportjob/ to see a list of completed, active, and queued export jobs. A job's "requested" field should be set when the request is
+            processed, its "begin" field should be set when the task queue begins processing the export, and its "end" and "filename" fields should be set when
+            the export is complete. I advise polling once every few seconds if there is a job that has begun but has not completed. Download the file from
+            /exported_file/{ filename } once the export is complete.</p>
+        <pre contenteditable>
+{% include "example10.js" %}
+        </pre>
+        <button onclick="eval($(this).prev('pre').html())">Run</button>
+        <h3>Production deployment steps</h3>
+        <ul>
+            <h4>General</h4>
+            <li>Set up server with a large secondary block device for completed exports.</li>
+            <li>Set up users for Django and possibly for selected SQL database</li>
+            <li>Set up domain with DKIM records and point the A record at the server</li>
+            <li>Set up Amazon SES and apply for production use from the appropriate domain</li>
+            <li>Set up Stripe for "Live" along with a monthly plan</li>
+
+            <h4>MongoDB</h4>
+            <li>Deploy MongoDB for production use; see <a href="http://docs.mongodb.org/manual/administration/production-notes/">docs</a></li>
+            <li>Load MongoDB with the census database</li>
+            <li>ENSURE INDEX on all relevant columns (use scripts/update_census.py)</li>
+            <li>Create a MongoDB login for the backend</li>
+
+            <h4>Database (PostgreSQL recommended)</h4>
+            <li>Deploy a SQL database for production use.</li>
+            <li>Create a login for the backend</li>
+            <li>Set up write-ahead-log archival to a backup drive</li>
+
+            <h4>Django</h4>
+            <li>Set up a virtual environment for Django</li>
+            <li>Load the backend into the virtual environment, and install all dependencies with pip</li>
+            <li>Configure dds/settings.py:</li>
+            <ul>
+                <li>Ensure DEBUG=False</li>
+                <li>Configure DATABASES to connect to the SQL database</li>
+                <li>Configure MONGODB_URI to connect to the MongoDB database</li>
+                <li>Configure MEDIA_ROOT and STATIC_ROOT</li>
+                <li>Securely generate SECRET_KEY</li>
+                <li>Configure MEDIA_ROOT and STATIC_ROOT</li>
+                <li>Configure EMAIL_BACKEND appropriately. I recommend Amazon SES.</li>
+                <li>Configure DDS_DB and DDS_EXPORT_LIMIT</li>
+                <li>Configure Stripe keys and PAYMENT_PLANS</li>
+                <li>Set SENDFILE_BACKEND to match the web server</li>
+                <li>Set ALLOWED_HOSTS, CSRF_COOKIE_SECURE, and SESSION_COOKIE_SECURE</li>
+            </ul>
+            <li>Set the domain of Data Driven Shipping appropriately in fixtures/initial_data.json</li>
+            <li>Optionally fill initial_data.json with a census field names and descriptions</li>
+            <li>Run syncdb to populate the database</li>
+            <li>Set up Gunicorn to serve Django in production</li>
+            <li>Set up a script to start Celery</li>
+
+            <h4>Web server (nginx recommended)</h4>
+            <li>Configure web server for production use, reverse proxying to Gunicorn</li>
+            <li>Configure web server to serve static files and export output from appropriate locations</li>
+            <li>Generate keys</li>
+            <li>Request SSL certificate for domain and configure nginx to only use HTTPS</li>
+            <li>Encrypt and back up private keys; keep offline</li>
+
+            <h4>Monitoring/profiling (New Relic recommended)</h4>
+            <li>Set up an account if necessary</li>
+            <li>Install the monitoring/profiling daemon on the server and connect it to the account</li>
+            <h4>Init files</h4>
+            <li>Configure whichever init system is present to start the following on boot:</li>
+            <ul>
+                <li>Django via gunicorn (run as "dds")</li>
+                <li>Celery (run as "dds")</li>
+                <li>Web server (run as "www", or alternative)</li>
+                <li>SQL database (run as database user)</li>
+                <li>MongoDB (run as "dds")</li>
+                <li>Profiling/monitoring (run as root)</li>
+            </ul>
+
+            <h4>Amazon S3, optionally</h4>
+            <li>Set up S3 bucket for export output</li>
+            <li>Add an API resource for download tickets</li>
+            <li>Configure Django to store export output in the S3 bucket</li>
+            <h4>Hardening</h4>
+            <li>Recommend setting SSH to high port</li>
+            <li>Set up fail2ban</li>
+            <li>Disable root login</li>
+            <h4>Finishing bits</h4>
+            <li>Set up Django administrator account</li>
+            <li>Remote backup, optional</li>
+        </ul>
+    {% else %}
+        {% url "account_login" as login_url %}
+        {% url "account_signup" as signup_url %}
+        <p>{% blocktrans %}You can <a href="{{ login_url }}" class="btn btn-default">Log In</a> or
+            <a href="{{ signup_url }}" class="btn btn-primary">Sign Up</a> to try out the site.{% endblocktrans %}</p>
+        <p>When you sign up, the backend will try to send an email to verify.
+            In development, this just means that it will be printed to the console.</p>
+    {% endif %}
+{% endblock %}
+{% block extra_script %}
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+        var store_response = function (jqo) {
+            return function (data, textStatus, jqXHR) {
+                $(jqo).after("<br/>Response: " + jqXHR.status + " " + textStatus + "<br/><pre>\n" + JSON.stringify(data, undefined, 2) + "\n</pre>");
+                if (data.objects[0].name == "Companies in Las Vegas") {
+                    window.query_uri = data.objects[0].resource_uri;
+                }
+                last = data.objects[data.objects.length - 1];
+                if (last.download_link != null) {
+                    $(jqo).after('<p>Download your file: <a href="' + last.download_link + '">' + last.export_filename + "</a></p>");
+                }
+            }
+        };
+        var stripeResponseHandler = function (status, response) {
+            var $form = $('#payment-form');
+
+            if (response.error) {
+                // Show the errors on the form
+                $form.find('.payment-errors').text(response.error.message);
+                $form.find('button').prop('disabled', false);
+            } else {
+                // token contains id, last4, and card type
+                var token = response.id;
+                window.stripetoken = token;
+                // Insert the token into the form so it gets submitted to the server
+                $form.append($('<input name="stripeToken" />').val(token));
+            }
+        };
+        Stripe.setPublishableKey('pk_test_39bQB9WSCOrQbLQ05oCn1oeM');
+        jQuery(function ($) {
+            $('#payment-form').submit(function (event) {
+                var $form = $(this);
+
+                // Disable the submit button to prevent repeated clicks
+                $form.find('button').prop('disabled', true);
+
+                Stripe.card.createToken($form, stripeResponseHandler);
+
+                // Prevent the form from submitting with the default action
+                return false;
+            });
+        });
+        window.csrftoken = $("input[name^='csrfmiddlewaretoken']").val();
+        $("#showcsrf").val(window.csrftoken);
+    </script>
+{% endblock %}

@@ -1,0 +1,100 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<h2>Database upload/update procedure</h2>
+
+<p>Use scp/rsync to upload the .txt database to a temporary location on the server.</p>
+
+<p>Then:</p>
+
+<pre><code>cd /path/to/file/
+python /srv/dds/scripts/update_census.py filename.txt censusYYYYi
+</code></pre>
+
+<p>where <code>filename.txt</code> is the uploaded file and <code>censusYYYYi</code> is the name of the database to which to upload.</p>
+
+<p>Recommended convention: YYYY - the full year, i - an incrementing letter.</p>
+
+<p>Example:</p>
+
+<pre><code>census2014a - first database of 2014
+census2014b - second database revision
+census2015a - first database of 2015
+...
+</code></pre>
+
+<p>The update_census.py script creates a new collection named companies in the new database. </p>
+
+<p>Once the MongoDB database has been updated, the temporary file can (should) be removed to save disk space.</p>
+
+<h2>Database settings</h2>
+
+<pre><code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dds',
+        'USER': 'dds',
+        'PASSWORD': 'y8M36LkeVgGn',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+</code></pre>
+
+<h2>Secret key</h2>
+
+<p>Generated on server:</p>
+
+<pre><code>t2-(_76h2+aohc5fn_$!n76nb5##w$ae^#o5+27a%hivj0&amp;u#^
+</code></pre>
+
+<h2>Django superuser credentials</h2>
+
+<pre><code>admin nzLdtrgHNMMe
+</code></pre>
+
+<h2>Django admin panel</h2>
+
+<p>Log in at datadrivenshipping.com/admin</p>
+
+<h2>South</h2>
+
+<p>Installed South
+Created initial migrations for dds, kombu.transport.django, and tastypie
+Fake migrated dds
+Actually migrated tastypie</p>
+
+<h2>allowed_hosts</h2>
+
+<pre><code>*.datadrivenshipping.com
+127.0.0.1
+</code></pre>
+
+<h2>New Relic/Gunicorn run script</h2>
+
+<pre><code>NEW_RELIC_CONFIG_FILE=/srv/dds/newrelic.ini \
+newrelic-admin \
+run-program \
+gunicorn dds.wsgi:application --bind 127.0.0.1:8001
+</code></pre>
+
+<h2>New Relic application page</h2>
+
+<p>https://rpm.newrelic.com/accounts/633953/applications/2825017</p>
+
+<h2>Front page benchmarks</h2>
+
+<pre><code>Transactions:                  24501 hits
+Availability:                 100.00 %
+Elapsed time:                  81.03 secs
+Data transferred:              66.59 MB
+Response time:                  0.65 secs
+Transaction rate:             302.37 trans/sec
+Throughput:                     0.82 MB/sec
+Concurrency:                  197.97
+Successful transactions:       24501
+Failed transactions:               1
+Longest transaction:           16.43
+Shortest transaction:           0.38
+</code></pre>
+
+<p>Ran <code>siege -b</code> from two hosts, achieved around 15k RPM</p>

@@ -1,0 +1,14 @@
+<p><link rel='stylesheet' href='markdown9.css'/></p>
+
+<h2>MongoDB</h2>
+
+<p>Configured to bind only to 127.0.0.1, disabling external access</p>
+
+<p>Therefore, no credentials. MongoDB also does not store user data.</p>
+
+<p>Uploaded initial database using <code>scripts/update_census.py</code></p>
+
+<p>Added the following to /etc/cron.daily/logrotate to rotate mongodb logs daily:</p>
+
+<pre><code>kill -SIGUSR1 `pidof mongodb`
+</code></pre>

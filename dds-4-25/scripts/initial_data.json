@@ -1,0 +1,100 @@
+[
+    {
+        "pk": 1,
+        "model": "sites.site",
+        "fields": {
+            "domain": "datadrivenshipping.com",
+            "name": "Data Driven Shipping"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Status",
+            "db_column": "ACT_STAT",
+            "description": "Refers to the status of the record in MCMIS. An Active status means the entity is currently in business and subject to the FMCSR, the HMR, or is an intrastate non-HM carrier issued a USDOT number by selected states. An Inactive status means the entity is no longer in business or is no longer subject to the FMCSR or the HMR. (A = Active; I = Inactive)"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Legal Name",
+            "db_column": "NAME",
+            "description": "This is the legal name of the entity."
+        }
+    },
+    {
+        "pk": 3,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Entity Type",
+            "db_column": "CARSHIP",
+            "description": "Refers to the type of operation in which the entity is engaged. It identifies the entity as a carrier, hazardous materials shipper, a broker, a freight forwarder, a cargo tank facility, or a registrant. (C = Carrier; S = Shipper; B = Broker, R = Registrant (entity who registers vehicles but is not a carrier), F = Freight Forwarder, T = Cargo Tank.) Companies with multiple operations will have multiple letters."
+        }
+    },
+    {
+        "pk": 4,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "USDOT Number",
+            "db_column": "CENSUS_NUM",
+            "description": ""
+        }
+    },
+    {
+        "pk": 5,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "\"Doing Business As\" Name",
+            "db_column": "DBA_NAME",
+            "description": "This may be a trade name under which the entity does business. It can be any name identifying the entity other than the legal name."
+        }
+    },
+    {
+        "pk": 6,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Dun & Bradstreet Number",
+            "db_column": "DBNUM",
+            "description": "This is the corporate registration number given by Dun & Bradstreet."
+        }
+    },
+    {
+        "pk": 7,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Nationality (Physical)",
+            "db_column": "PHY_NATN",
+            "description": "General geographic location of the principal office. (US = United States and Territories, CD = Canadian Territories; MX = Mexican States; SA = Central and South American Nations)"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "FMCSA Region",
+            "db_column": "REG",
+            "description": "FHWA/FMCSA Region in which the principal office resides. The following is a list of FMCSA Regions and the States assigned to each Region:\n∗ Region 01: CT, ME, MA, NH, NY, NJ, RI, VT, PR and VI\n∗ Region 03: DE, DC, MD, PA, VA and WV\n∗ Region 04: AL, GA, FL, MS, NC, SC, TN and KY\n∗ Region 05: IL, IN, MI, OH, MN and WI\n∗ Region 06: AR, LA, NM, OK and TX\n∗ Region 08: CO, MT, ND, SD, UT and WY\n∗ Region 09: AZ, CA, NV, HI, GU and AS∗ Region 10: AK, ID, OR and WA"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "Street (Physical)",
+            "db_column": "PHY_STR",
+            "description": "Identifies the street address where the entity’s principal office is physically located."
+        }
+    },
+    {
+        "pk": 10,
+        "model": "dds.CensusField",
+        "fields": {
+            "readable_name": "City (Physical)",
+            "db_column": "PHY_CITY",
+            "description": "Identifies the city where the entity’s principal place of business is located."
+        }
+    }
+]
